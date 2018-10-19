@@ -1,2 +1,19 @@
 # acme-check
-automatically checks existing nginx / vestaCP / OpenVZ Web Panel configurations for SSL certs and then issues / validates / renews the certs listed there
+automatically issues / validates / renews SSL certs listed in **nginx** / **vestaCP** / **OpenVZ Web Panel** configurations using Let's Encrypt ACME tool
+
+# usage
+perl acme-check.pl
+
+# requirements
+* perl
+* socat
+* curl (or wget)
+
+# installation
+* for Ubuntu / Debian:
+
+ ```apt-get install socat curl -y```
+ 
+* for Redhat / Fedora / CentOS:
+
+```yum install perl socat -y```
