@@ -13,6 +13,8 @@ perl acme-check.pl
 
 ```yum install perl socat -y && curl https://raw.githubusercontent.com/denisix/acme-check/master/acme-check.pl -o acme-check.pl && perl acme-check.pl```
 
+* in case of outdated curl / issues with curl, please use
+```export ACME_USE_WGET=1```
 
 # requirements
 * perl
