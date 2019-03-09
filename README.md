@@ -2,7 +2,7 @@
 automatically issues / validates / renews SSL certs listed in **nginx** / **vestaCP** / **OpenVZ Web Panel** configurations using Let's Encrypt ACME tool
 
 # usage
-perl acme-check.pl
+perl acme-check.pl <domain.com>
 
 # usage (one-liner)
 * for Ubuntu / Debian:
@@ -13,7 +13,8 @@ perl acme-check.pl
 
 ```yum install perl socat -y && curl https://raw.githubusercontent.com/denisix/acme-check/master/acme-check.pl -o acme-check.pl && perl acme-check.pl```
 
-* in case of outdated curl / issues with curl, please use
+* in case of outdated curl / issues with curl, to use wget please export
+
 ```export ACME_USE_WGET=1```
 
 # requirements
