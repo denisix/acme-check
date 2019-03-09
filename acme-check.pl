@@ -51,10 +51,12 @@ sub parse_nginx {
 
             if (/ssl_certificate\s+(\S+)\;/) {
                 $crt = $1;
+				$crt =~ s/[\"\']+//g;
             }
 
             if (/ssl_certificate_key\s+(\S+)\;/) {
                 $key = $1;
+				$key =~ s/[\"\']+//g;
             }
 
             if ($key ne '' && $crt ne '') {
