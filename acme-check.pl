@@ -211,15 +211,17 @@ foreach my $p (@prog) { system("/etc/init.d/$p start || service $p start") }
 foreach my $id (@dockers) { print "- starting docker $id\n"; system("docker start $id") }
 
 # restart docker containters that have '/etc/ssl' volumes:
-open IO, 'docker ps --filter volume=/etc/ssl --format {{.ID}}|';
-while(<IO>) {
-	if (/([0-9a-f]{12})/) {
-		my $id = $_;
-		my @f = grep /$id/, @dockers;
-		if ($#f eq -1) {
-			print "- restarting docker $id (has /etc/ssl volume)\n";
-			system("docker restart $id");
+if (-e '/usr/bin/docker') {
+	open IO, 'docker ps --filter volume=/etc/ssl --format {{.ID}}|';
+	while(<IO>) {
+		if (/([0-9a-f]{12})/) {
+			my $id = $_;
+			my @f = grep /$id/, @dockers;
+			if ($#f eq -1) {
+				print "- restarting docker $id (has /etc/ssl volume)\n";
+				system("docker restart $id");
+			}
 		}
 	}
+	close IO;
 }
-close IO;
