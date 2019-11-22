@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 use warnings;
 use strict;
+use Cwd 'abs_path';
+my $myscript = abs_path($0);
 
 my %files;
 my %ssl;
@@ -167,7 +169,8 @@ system("rm -rf /root/.acme.sh") if -e "/root/.acme.sh";
 system("curl https://get.acme.sh | sh");
 
 print "- cleanup ACME from root crontab\n";
-system("crontab -u root -l|grep -v '/root/.acme.sh'|crontab -u root -");
+system("(crontab -u root -l | grep -v '/root/.acme.sh')|crontab -u root -");
+system("crontab -u root -l | grep -q $myscript || (crontab -u root -l; echo '0 4 * * * perl $myscript >/dev/null 2>&1) | crontab -u root -");
 
 my @prog;
 push @prog, 'nginx' if -e '/etc/init.d/nginx';
