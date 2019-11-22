@@ -82,7 +82,7 @@ sub check_cert_expire {
 		return ('y', $cn, "let's encrypt");
 	}
 
-	open my $io, "openssl x509 -in $crt -noout -subject -issuer -checkend 777600 && echo OK || echo FAIL|";
+	open my $io, "openssl x509 -in $crt -noout -subject -issuer -checkend 259200 && echo OK || echo FAIL|";
 	my ($exp, $cn, $issuer) = ('y', '', '');
 	while(<$io>) {
 		print "$_\n" if $debug ne '';
@@ -170,7 +170,7 @@ system("curl https://get.acme.sh | sh");
 
 print "- cleanup ACME from root crontab\n";
 system("(crontab -u root -l | grep -v '/root/.acme.sh')|crontab -u root -");
-system("crontab -u root -l | grep -q $myscript || (crontab -u root -l; echo '0 4 * * * perl $myscript >/dev/null 2>&1) | crontab -u root -");
+system("crontab -u root -l | grep -q $myscript || (crontab -u root -l; echo '0 4 */2 * * perl $myscript >/dev/null 2>&1) | crontab -u root -");
 
 my @prog;
 push @prog, 'nginx' if -e '/etc/init.d/nginx';
