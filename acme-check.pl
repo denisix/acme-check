@@ -74,7 +74,10 @@ sub parse_nginx {
 sub check_cert_expire {
 	my $crt = shift;
 
-	return('y', $force_host, "let's encrypt") if $force_host ne '' && $crt =~ /$force_host/;
+	if ($force_host ne '') {
+		return('y', $force_host, "let's encrypt") if $crt =~ /$force_host/;
+		return('n', '', '')
+	}
 
 	if (! -e $crt) { 
 		my $cn = substr $crt, ((rindex $crt, '/')+1);
