@@ -140,6 +140,7 @@ if (-e '/etc/ssl/custom.conf') {
 # Force via cmdline
 if ($force_host ne '') {
 	print "- Forcing SSL generation for domain [$force_host]:\n";
+	undef %ssl;
 	$ssl{"/etc/ssl/$force_host.crt"} = "/etc/ssl/$force_host.key";
 }
 
