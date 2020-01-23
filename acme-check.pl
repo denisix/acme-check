@@ -170,7 +170,11 @@ if ($#exp eq -1) {
 
 print "- updating ACME\n";
 system("rm -rf /root/.acme.sh") if -e "/root/.acme.sh";
-system("curl https://get.acme.sh | sh");
+if ($ENV{'ACME_USE_WGET'} eq 1) {
+        system("wget -o /dev/null -O - https://get.acme.sh | sh");
+} else {
+        system("curl https://get.acme.sh | sh");
+}
 
 print "- cleanup ACME from root crontab\n";
 system("(crontab -u root -l | grep -v '/root/.acme.sh')|crontab -u root -");
