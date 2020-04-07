@@ -71,6 +71,66 @@ sub parse_nginx {
 	return;
 }
 
+sub parse_apache {
+	my ($l, $file) = @_;
+
+	if ($debug ne '') {
+		for(my $i=0;$i<=$l;$i++) { print " "; }
+		print "$file\n";
+	}
+
+	return if defined $files{$file};
+	$files{$file} = 1;
+	$l++;
+
+	if ($file =~ /\*/) {
+		while(< $file >) {
+			parse_apache($l, $_);
+		}
+	} else {
+		return if not -e $file;
+		my @raw = ('');
+		open my $fh, '<'. $file;
+		if ($fh) {
+			eval {
+				#print "$file\n";
+				@raw = <$fh>;
+				close $fh;
+			}
+		}
+
+		my($key, $crt) = ('', '');
+		foreach $_ (@raw) {
+			next if /^#/;
+
+			if (/ServerName/) {
+				($key, $crt) = ('', '');
+			}
+
+			if (/SSLCertificateFile\s+(\S+)/) {
+				$crt = $1;
+			}
+
+			if (/SSLCertificateKeyFile\s+(\S+)/) {
+				$key = $1;
+			}
+
+			if ($key ne '' && $crt ne '') {
+				print "- SSL [$crt] [$key]\n" if $debug ne '';
+				$ssl{$crt} = $key;
+				($key, $crt) = ('', '');
+			}
+
+			if (/Include\s+([\w\W\d\D\S]+)\n*/) {
+				my $fn = $1; chop $fn;
+				parse_apache($l, $fn);
+			}
+		}
+	}
+	return;
+}
+
+
 sub check_cert_expire {
 	my $crt = shift;
 
@@ -109,6 +169,8 @@ parse_nginx 1, '/etc/nginx/nginx.conf' if -e "/etc/nginx/nginx.conf"; # NGINX
 parse_nginx 1, '/srv/nginx/conf.d/*' if -e "/srv/nginx/conf.d"; # NGINX DOCKER
 parse_nginx 1, '/srv/nginx/data/conf.d/*' if -e "/srv/nginx/data/conf.d"; # NGINX DOCKER
 parse_nginx 1, '/usr/local/vesta/nginx/conf/nginx.conf' if -e '/usr/local/vesta/nginx/conf/nginx.conf'; # NGINX VESTA
+
+parse_apache 1, '/etc/apache2/conf.d/vesta.conf' if -e '/etc/apache2/conf.d/vesta.conf'; # APACHE2 VESTA
 
 # OpenVZ
 if (-e '/opt/ovz-web-panel/config/certs/server.crt' && -e '/opt/ovz-web-panel/config/certs/server.key') {
@@ -157,9 +219,25 @@ foreach my $crt (keys %ssl) {
 	my ($exp, $cn, $issuer) = check_cert_expire($crt);
 	print "EXP [$exp] CN[$cn] ISSUER[$issuer]\n" if $debug ne '';
 
-	if ($exp eq 'y' && $issuer =~ /let's encrypt/i) {
-		#print "EXP $cn\n";
-		push @exp, [$cn,$crt,$key];
+	if ($exp eq 'y' && $issuer =~ /let's encrypt/i && $cn ne '') {
+
+		# check domain using DIG tool
+		open IO, "dig +short \@1.1.1.1 $cn|";
+		my $ip = <IO>;
+		close IO;
+		if (defined $ip && $ip ne '') {
+			print " cn[$cn] ip [$ip]\n";
+			open IO, "ip -o -br a|grep $ip|";
+			my $found = <IO>;
+			close IO;
+
+			if ($found ne '') {
+				print "EXP $cn IP $ip\n";
+				push @exp, [$cn,$crt,$key];
+			}
+		} else {
+			print "- WARN: no IP for $cn!\n";
+		}
 	}
 }
 
