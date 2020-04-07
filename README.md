@@ -7,11 +7,11 @@ perl acme-check.pl <domain.com>
 # usage (one-liner)
 * for Ubuntu / Debian:
 
-```apt-get install perl socat curl -y && curl https://raw.githubusercontent.com/denisix/acme-check/master/acme-check.pl -o acme-check.pl && perl acme-check.pl```
+```apt-get install perl socat curl dnsutils -y && curl https://raw.githubusercontent.com/denisix/acme-check/master/acme-check.pl -o acme-check.pl && perl acme-check.pl```
 
 * for Redhat / Fedora / CentOS:
 
-```yum install perl socat -y && curl https://raw.githubusercontent.com/denisix/acme-check/master/acme-check.pl -o acme-check.pl && perl acme-check.pl```
+```yum install perl socat bind-utils -y && curl https://raw.githubusercontent.com/denisix/acme-check/master/acme-check.pl -o acme-check.pl && perl acme-check.pl```
 
 * in case of outdated curl / issues with curl, to use wget please export
 
