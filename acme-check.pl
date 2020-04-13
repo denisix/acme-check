@@ -227,7 +227,7 @@ foreach my $crt (keys %ssl) {
 		close IO;
 		if (defined $ip && $ip ne '') {
 			print " cn[$cn] ip [$ip]\n";
-			open IO, "ip -o -br a|grep $ip|";
+			open IO, "ip -o a|grep $ip|";
 			my $found = <IO>;
 			close IO;
 
