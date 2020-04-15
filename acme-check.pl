@@ -142,6 +142,7 @@ sub check_cert_expire {
 	if (! -e $crt) { 
 		my $cn = substr $crt, ((rindex $crt, '/')+1);
 		$cn =~ s/\.(crt|pem|cert)//g;
+		$cn =~ s/\"//g;
 		return ('y', $cn, "let's encrypt");
 	}
 
@@ -231,7 +232,7 @@ foreach my $crt (keys %ssl) {
 			my $found = <IO>;
 			close IO;
 
-			if ($found ne '') {
+			if (defined $found && $found ne '') {
 				print "EXP $cn IP $ip\n";
 				push @exp, [$cn,$crt,$key];
 			}
