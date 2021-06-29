@@ -288,7 +288,7 @@ foreach my $x (@exp) {
 	print "-> RENEW: $cn\n";
 
 	system("cd .acme.sh && \
-		( ./acme.sh --issue -k 4096 --standalone -d $cn --force || ./acme.sh --issue -k 4096 --standalone -d $cn --force --httpport 63219 ) && \
+		( ./acme.sh --set-default-ca --server letsencrypt --issue -k 4096 --standalone -d $cn --force || ./acme.sh --set-default-ca --server letsencrypt --issue -k 4096 --standalone -d $cn --force --httpport 63219 ) && \
 		cat /root/.acme.sh/$cn/$cn.key > $key && \
 		cat /root/.acme.sh/$cn/fullchain.cer > $crt && \
 		echo OK $cn");
